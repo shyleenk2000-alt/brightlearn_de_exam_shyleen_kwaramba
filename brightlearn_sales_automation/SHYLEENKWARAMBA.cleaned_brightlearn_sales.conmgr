@@ -1,0 +1,12 @@
+﻿<?xml version="1.0"?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:ObjectName="SHYLEENKWARAMBA.cleaned_brightlearn_sales"
+  DTS:DTSID="{F9F71F6D-BEB0-470E-A167-AF96835CE3C2}"
+  DTS:CreationName="OLEDB">
+  <DTS:ObjectData>
+    <DTS:ConnectionManager
+      DTS:ConnectRetryCount="1"
+      DTS:ConnectRetryInterval="5"
+      DTS:ConnectionString="Data Source=SHYLEENKWARAMBA;Initial Catalog=cleaned_brightlearn_sales;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-brightlearn_sales_automation-{F9F71F6D-BEB0-470E-A167-AF96835CE3C2}SHYLEENKWARAMBA.cleaned_brightlearn_sales;Auto Translate=False;" />
+  </DTS:ObjectData>
+</DTS:ConnectionManager>
