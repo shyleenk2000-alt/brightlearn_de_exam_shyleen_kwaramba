@@ -6,34 +6,47 @@ BEGIN
     -- Create table only if it does not exist
     IF NOT EXISTS (
         SELECT 1
-        FROM sys.tables
+        FROM [cleaned_brightlearn_sales].sys.tables
         WHERE name = 'cleaned_dim_payment'
           AND schema_id = SCHEMA_ID('dbo')
     )
     BEGIN
         CREATE TABLE [cleaned_brightlearn_sales].[dbo].[cleaned_dim_payment](
-    [PaymentID] INT IDENTITY (1,1) PRIMARY KEY,
-	[payment_method] [varchar](50)  NOT NULL,
-	[load_date] DATETIME DEFAULT GETDATE()
-) 
-
+            [PaymentID] INT IDENTITY (1,1) PRIMARY KEY,
+            [payment_method] VARCHAR(50) NOT NULL,
+            [load_date] DATETIME DEFAULT GETDATE()
+        );
     END;
 
-    ---Inserting values into table
+
+    -- Insert only new cleaned payment methods
     INSERT INTO [cleaned_brightlearn_sales].[dbo].[cleaned_dim_payment]
-        ([payment_method])
+    (
+        [payment_method]
+    )
 
     SELECT DISTINCT
-     LOWER(LTRIM(RTRIM(payment_method))) AS payment_method
+        LOWER(LTRIM(RTRIM(s.[payment_method]))) AS payment_method
 
-    FROM [stg_brightlearn_sales].[dbo].[stg_dim_payment]
+    FROM [stg_brightlearn_sales].[dbo].[stg_dim_payment] s
 
+    WHERE s.[payment_method] IS NOT NULL
+      AND LTRIM(RTRIM(s.[payment_method])) <> ''
 
-WHERE
-payment_method IS NOT NULL
-AND
-LTRIM(RTRIM(payment_method)) <> ''
+      -- Prevent duplicate payment methods
+      AND NOT EXISTS
+      (
+          SELECT 1
+          FROM [cleaned_brightlearn_sales].[dbo].[cleaned_dim_payment] p
+          WHERE p.[payment_method] = LOWER(LTRIM(RTRIM(s.[payment_method])))
+      );
+
 END;
-EXEC[dbo].[sp_create_cleaned_dim_payment]
+GO
 
-SELECT * FROM  [cleaned_brightlearn_sales].[dbo].[cleaned_dim_payment]
+
+EXEC [dbo].[sp_create_cleaned_dim_payment];
+
+
+SELECT *
+FROM [cleaned_brightlearn_sales].[dbo].[cleaned_dim_payment];

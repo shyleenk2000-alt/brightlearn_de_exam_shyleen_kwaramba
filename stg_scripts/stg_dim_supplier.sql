@@ -1,17 +1,44 @@
----Creating a table with id
-DROP TABLE [stg_brightlearn_sales].[dbo].[stg_dim_supplier]
-CREATE TABLE [stg_brightlearn_sales].[dbo].[stg_dim_supplier](
-    [SupplierID] INT IDENTITY (1,1) PRIMARY KEY,
-	[supplier] [varchar](50) NOT NULL,
-	[load_date] DATETIME DEFAULT GETDATE()
-) 
+CREATE OR ALTER PROCEDURE dbo.sp_load_stg_dim_supplier
+AS
+BEGIN
+    SET NOCOUNT ON;
 
----Inserting values into table
-INSERT INTO [stg_brightlearn_sales].[dbo].[stg_dim_supplier]
-      ([supplier])
+    IF OBJECT_ID('dbo.stg_dim_supplier', 'U') IS NULL
+    BEGIN
+        CREATE TABLE dbo.stg_dim_supplier(
+            [SupplierID] INT IDENTITY (1,1) PRIMARY KEY,
+            [supplier] VARCHAR(50) NOT NULL,
+            [load_date] DATETIME DEFAULT GETDATE()
+        );
+    END;
 
-SELECT DISTINCT
-    [supplier]  
-FROM[stg_brightlearn_sales].[dbo].[brightlearn_sales_raw_data]
 
-SELECT *FROM [stg_brightlearn_sales].[dbo].[stg_dim_supplier]
+    INSERT INTO dbo.stg_dim_supplier
+    (
+        [supplier]
+    )
+
+    SELECT DISTINCT
+        r.[supplier]
+
+    FROM dbo.brightlearn_sales_raw_data r
+
+    WHERE r.[supplier] IS NOT NULL
+      AND LTRIM(RTRIM(r.[supplier])) <> ''
+
+      AND NOT EXISTS
+    (
+        SELECT 1
+        FROM dbo.stg_dim_supplier s
+        WHERE s.[supplier] = r.[supplier]
+    );
+
+END;
+GO
+
+
+EXEC dbo.sp_load_stg_dim_supplier;
+
+
+SELECT *
+FROM dbo.stg_dim_supplier;
