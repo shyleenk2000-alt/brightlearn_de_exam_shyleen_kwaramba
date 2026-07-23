@@ -1,270 +1,387 @@
-Introduction
+# 📊 BrightLearn Sales 
 
-The purpose of this project was to design and implement a Sales Data Warehouse for BrightLearn using SQL Server. The project involved building a complete ETL (Extract, Transform and Load) pipeline that transformed raw sales data into clean, structured, and meaningful information for business reporting and analysis.
+# Data Quality Findings Report
 
-The project followed a layered architecture consisting of a staging database, a cleaning database, and a data warehouse. Raw data was first imported from a CSV file into the staging layer, cleaned and standardised using stored procedures in the cleaning layer, and finally loaded into a star schema in the data warehouse.
+**Author:** Shyleen Kwaramba
 
-The completed data warehouse was then used to answer important business questions related to customer behaviour, product performance, store performance, sales trends, and inventory management.
+---
 
-Project Objectives
+# Table of Contents
+
+- Introduction
+- Project Objectives
+- ETL Process
+- Data Warehouse Design
+- Challenges Encountered and Solutions
+- Business Questions
+- Key Findings
+- Skills Demonstrated
+- Lessons Learned
+- Conclusion
+
+---
+
+# Introduction
+
+This project involved designing and implementing a Sales Data Warehouse for BrightLearn using SQL Server. The objective was to transform raw sales data into clean, structured and reliable data that supports reporting and business decision making.
+
+The project followed a complete ETL (Extract, Transform and Load) process consisting of three database layers:
+
+- Staging Database
+- Cleaning Database
+- Data Warehouse
+
+The raw CSV file was first loaded into the staging database. The data was then cleaned and standardised in the cleaning layer before being loaded into a star schema in the data warehouse. The completed warehouse was used to answer important business questions related to sales performance, customer behaviour, inventory management and store performance.
+
+---
+
+# Project Objectives
 
 The objectives of this project were to:
 
-Build a complete ETL pipeline using SQL Server.
-Design and implement a star schema.
-Clean and standardise raw sales data.
-Automate data loading using stored procedures.
-Improve data quality before loading the warehouse.
-Prevent duplicate records during ETL execution.
-Generate business insights using SQL queries.
-ETL Process
+- Build a complete ETL pipeline using SQL Server.
+- Design and implement a star schema.
+- Improve data quality through data cleaning.
+- Automate the ETL process using stored procedures.
+- Prevent duplicate records during data loading.
+- Build a reliable data warehouse for reporting.
+- Answer business questions using SQL.
 
-The ETL pipeline was divided into three stages.
+---
 
-1. Staging Layer
+# ETL Process
 
-The raw BrightLearn CSV dataset was imported directly into the staging database without making any changes.
+## Staging Layer
 
-This layer acted as the landing area for all incoming data and preserved the original dataset for future reference.
+The staging database served as the landing area for the raw BrightLearn CSV dataset.
 
-2. Cleaning Layer
+Activities completed:
 
-The cleaning layer was responsible for improving data quality before loading the warehouse.
+- Imported the raw CSV file.
+- Preserved the original data without modifications.
+- Used the staging tables as the source for the cleaning process.
 
-The following cleaning techniques were applied:
+---
 
-Removed duplicate records using SELECT DISTINCT.
-Prevented duplicate inserts using WHERE NOT EXISTS.
-Removed unnecessary spaces using LTRIM() and RTRIM().
-Standardised text using LOWER().
-Removed blank values using <> ''.
-Removed incomplete records using IS NOT NULL.
-Converted multiple date formats into SQL DATE format using TRY_CONVERT() together with COALESCE().
-Standardised customer, product, supplier, cashier, payment method and store information.
-Automated all cleaning processes using stored procedures.
-3. Data Warehouse Layer
+## Cleaning Layer
+
+The cleaning layer improved the quality of the data before it was loaded into the warehouse.
+
+### Cleaning techniques applied
+
+- Removed duplicate records using `SELECT DISTINCT`.
+- Prevented duplicate inserts using `WHERE NOT EXISTS`.
+- Removed leading and trailing spaces using `LTRIM()` and `RTRIM()`.
+- Standardised text values using `LOWER()`.
+- Filtered blank values using `<> ''`.
+- Removed records containing `NULL` values using `IS NOT NULL`.
+- Converted inconsistent date formats using `TRY_CONVERT()` together with `COALESCE()`.
+- Standardised customer, supplier, cashier, payment method, product and store information.
+- Automated the cleaning process using stored procedures.
+
+---
+
+## Data Warehouse Layer
 
 The cleaned data was loaded into a star schema.
 
-The warehouse consists of:
+### Dimension Tables
 
-Dimension Tables
-DimCustomer
-DimProduct
-DimStore
-DimDate
-DimPaymentMethod
-DimCashier
-DimSupplier
-Fact Table
-FactSales
+- DimCustomer
+- DimProduct
+- DimStore
+- DimDate
+- DimPaymentMethod
+- DimCashier
+- DimSupplier
 
-The fact table stores business measures while the dimension tables provide descriptive information for reporting and analysis.
+### Fact Table
 
-Challenges Encountered
+- FactSales
 
-Building the ETL pipeline presented several challenges that required investigation and problem solving.
+The fact table stores measurable business information while the dimension tables store descriptive information used for reporting and analysis.
 
-1. Multiple Date Formats
+---
 
-The raw dataset contained dates in different formats such as:
+# Data Warehouse Design
 
-yyyy-mm-dd
-yyyy/mm/dd
-dd-mm-yyyy
-dd/mm/yyyy
-dd Mon yyyy
+The warehouse was designed using a star schema because it improves query performance and simplifies reporting.
 
-This caused conversion errors when importing data into SQL Server.
+### Fact Table Measures
 
-Solution
+- Transaction Date
+- Transaction Discount
+- Line Amount
+- Unit Price
+- Cost Price
+- Quantity
+- Stock on Hand
+- Reorder Threshold
 
-The dates were converted using TRY_CONVERT() with multiple conversion styles. COALESCE() was then used to return the first successful conversion, ensuring that all dates were stored consistently as the SQL DATE data type.
+### Dimension Tables
 
-2. Duplicate Records
+The FactSales table references:
+
+- Customer
+- Product
+- Store
+- Date
+- Payment Method
+- Cashier
+- Supplier
+
+This structure allows sales to be analysed from multiple business perspectives while reducing data redundancy.
+
+---
+
+# Challenges Encountered and Solutions
+
+## 1. Inconsistent Date Formats
+
+### Challenge
+
+The raw dataset contained several date formats, including:
+
+- yyyy-mm-dd
+- yyyy/mm/dd
+- dd-mm-yyyy
+- dd/mm/yyyy
+- dd Mon yyyy
+
+These formats caused conversion errors when loading the data into SQL Server.
+
+### Solution
+
+I used `TRY_CONVERT()` together with `COALESCE()` to test multiple date formats and return the first successful conversion. This ensured that every valid date was stored using the SQL `DATE` data type.
+
+---
+
+## 2. Duplicate Records
+
+### Challenge
 
 Running stored procedures multiple times initially created duplicate records in the cleaning layer and dimension tables.
 
-Solution
+### Solution
 
-Duplicate source records were removed using SELECT DISTINCT.
+I used:
 
-To prevent duplicate inserts after rerunning stored procedures, WHERE NOT EXISTS was implemented so that only new records were inserted.
+- `SELECT DISTINCT` to remove duplicate records from the source data.
+- `WHERE NOT EXISTS` to prevent duplicate inserts whenever the stored procedures were executed again.
 
-3. Blank Values
+This made the ETL process safe to rerun.
 
-Some records contained blank values rather than NULL values.
+---
 
-For example:
+## 3. Blank Values
 
-customer_email = ''
+### Challenge
 
-Although the value was not NULL, it still represented missing data.
+Some records contained blank values instead of `NULL`.
 
-Solution
+### Solution
 
-Blank values were removed using:
+I filtered blank values using:
 
+```sql
 <> ''
+```
 
-This ensured that important business fields contained meaningful information before loading the warehouse.
+This prevented incomplete records from being loaded into the cleaning layer.
 
-4. NULL Values
+---
 
-Some business fields contained NULL values which could affect relationships between fact and dimension tables.
+## 4. NULL Values
 
-Solution
+### Challenge
 
-The cleaning process filtered these records using:
+Some important fields contained `NULL` values.
 
+### Solution
+
+I excluded incomplete records using:
+
+```sql
 IS NOT NULL
+```
 
-This improved data quality and maintained referential integrity.
+This improved data quality and maintained relationships between the fact and dimension tables.
 
-5. Inconsistent Text Formatting
+---
 
-Names, cities, suppliers, products and stores contained inconsistent spacing and letter casing.
+## 5. Inconsistent Text Formatting
 
-Examples included:
+### Challenge
 
-Samsung
+The raw dataset contained inconsistent spacing and text formatting.
 
- samsung
+### Solution
 
-SAMSUNG
-Solution
+I standardised the data by:
 
-Text was cleaned using:
+- Removing extra spaces using `LTRIM()` and `RTRIM()`.
+- Converting text values to lowercase using `LOWER()`.
 
-LTRIM()
-RTRIM()
-LOWER()
+This ensured consistency throughout the warehouse.
 
-This standardised all text values throughout the warehouse.
+---
 
-6. Fact Table Design
+## 6. Fact Table Design
 
-Initially it was unclear how the FactSales table should be populated because the cleaning layer did not contain a transactional table.
+### Challenge
 
-Solution
+Initially there was no cleaned transactional table available for loading the fact table.
 
-A cleaned_sales table was created to hold cleaned transaction data.
+### Solution
 
-The FactSales table was then populated by joining the cleaned sales table with every dimension table to retrieve surrogate keys.
+I created a `cleaned_sales` table in the cleaning layer. The FactSales table was then loaded by joining the cleaned sales table with all dimension tables to retrieve surrogate keys.
 
-7. Preventing Duplicate Dates
+---
 
-Duplicate dates appeared in the cleaned DimDate table after running the stored procedure.
+## 7. Duplicate Dates in DimDate
 
-Solution
+### Challenge
 
-The stored procedure was updated to use SELECT DISTINCT together with WHERE NOT EXISTS so that each transaction date appeared only once.
+The DimDate table initially contained duplicate transaction dates.
 
-Business Questions
+### Solution
 
-The completed warehouse was used to answer the following business questions.
+I modified the stored procedure to use:
 
-What are the top five best-selling products by revenue?
-How much revenue does each store generate every month?
-What is the month-over-month revenue growth?
-Who are the top ten customers based on total spending?
-Which loyalty customers have not made a purchase since 28 April 2024?
-What is the average transaction value for each loyalty tier?
-How many products were sold by category in each store?
-Which products have stock levels below their reorder threshold?
-Project Findings
-Product Performance
+- `SELECT DISTINCT`
+- `WHERE NOT EXISTS`
 
-The analysis showed that a small number of products generated a significant percentage of the company's total revenue. Products such as the Samsung Galaxy A14 64GB, JBL Clip 4 Bluetooth Speaker and Padded Winter Jacket consistently ranked among the best-selling products.
+This ensured each transaction date appeared only once.
 
-Finding
+---
 
-These products should be prioritised for stock replenishment, promotions and marketing campaigns because they contribute significantly to overall revenue.
+# Business Questions
 
-Store Performance
+The completed data warehouse answered the following business questions:
 
-Revenue varied across stores throughout the reporting period. Some branches consistently outperformed others while a few generated lower monthly sales.
+1. What are the top five best-selling products by revenue?
+2. How much revenue does each store generate every month?
+3. What is the month-over-month revenue growth?
+4. Who are the top ten customers based on total spending?
+5. Which loyalty customers have not made a purchase since 28 April 2024?
+6. What is the average transaction value for each loyalty tier?
+7. How many products were sold by category in each store?
+8. Which products have stock levels below their reorder threshold?
 
-Finding
+---
 
-Management can use these results to identify successful sales strategies in high-performing stores and apply similar approaches to improve lower-performing branches.
+# Key Findings
 
-Sales Trends
+## Product Performance
 
-Monthly revenue changed throughout the reporting period, with some months showing strong growth while others experienced declines.
+- A small number of products generated a significant share of total revenue.
+- Products such as the Samsung Galaxy A14 64GB, JBL Clip 4 Bluetooth Speaker and Padded Winter Jacket consistently ranked among the top-performing products.
 
-Finding
+**Business Insight**
 
-Understanding monthly sales patterns allows the business to prepare for seasonal demand by improving stock planning, staffing levels and promotional activities.
+These products should be prioritised for stock replenishment and promotional campaigns because they contribute significantly to overall revenue.
 
-Customer Behaviour
+---
 
-Gold loyalty customers recorded the highest average transaction values compared to Silver and Bronze customers.
+## Store Performance
 
-Finding
+- Revenue varied across stores.
+- Some stores consistently outperformed others.
 
-The loyalty programme appears to encourage higher customer spending. Strengthening customer rewards and retention strategies could further increase revenue.
+**Business Insight**
 
-Customer Retention
+Management can use high-performing stores as benchmarks and develop improvement strategies for lower-performing branches.
 
-Several loyalty customers had not made purchases since 28 April 2024.
+---
 
-Finding
+## Sales Trends
 
-These inactive customers represent an opportunity for targeted marketing campaigns, personalised promotions and loyalty incentives to encourage repeat purchases.
+- Monthly revenue increased during some months and declined during others.
 
-Product Categories
+**Business Insight**
 
-Different product categories performed differently across stores.
+Understanding these trends helps improve inventory planning, staffing and promotional activities.
 
-Finding
+---
 
-Each store should manage inventory according to local customer demand instead of using identical stock levels across all branches.
+## Customer Behaviour
 
-Inventory Management
+- Gold loyalty customers recorded the highest average transaction value.
+- Loyal customers contributed significantly to overall revenue.
 
-Inventory levels were compared against reorder thresholds.
+**Business Insight**
 
-Finding
+Expanding the loyalty programme could improve customer retention and increase sales.
 
-No products were found to be below their reorder thresholds during the reporting period, indicating that inventory levels were generally well maintained.
+---
 
-Skills Demonstrated
+## Customer Retention
 
-This project demonstrates practical knowledge and experience in:
+- Several loyalty customers had not made purchases since 28 April 2024.
 
-SQL Server database development
-ETL pipeline development
-Data warehouse design
-Star schema modelling
-Data cleaning and validation
-Stored procedure development
-SQL joins
-Aggregate functions
-Window functions
-Data quality management
-Duplicate prevention
-Date standardisation
-Business intelligence reporting
-Analytical SQL queries
-Git and GitHub version control
-Lessons Learned
+**Business Insight**
 
-Completing this project strengthened my understanding of how raw business data can be transformed into reliable information through a structured ETL process.
+These customers can be targeted through personalised promotions and customer retention campaigns.
 
-I gained practical experience in designing a star schema, writing stored procedures, cleaning inconsistent data, preventing duplicate records, handling different date formats, filtering blank and NULL values, and building analytical SQL queries that answer real business questions.
+---
 
-The project also improved my problem-solving skills, as I encountered several technical challenges that required testing, debugging and refining my SQL code until the ETL pipeline worked correctly.
+## Inventory Management
 
-Conclusion
+- Inventory levels remained above the reorder threshold during the reporting period.
+
+**Business Insight**
+
+Current inventory management practices appear effective, but stock levels should continue to be monitored regularly.
+
+---
+
+# Skills Demonstrated
+
+This project demonstrates practical experience in:
+
+- ETL pipeline development
+- SQL Server development
+- Data cleaning and validation
+- Stored procedure development
+- Star schema design
+- Fact and dimension modelling
+- SQL joins
+- Aggregate functions
+- Window functions
+- Date standardisation
+- Duplicate prevention
+- Business intelligence reporting
+- Analytical SQL queries
+- Git and GitHub version control
+
+---
+
+# Lessons Learned
+
+This project strengthened my understanding of the complete ETL process and the importance of maintaining high-quality data before analysis.
+
+Through this project, I gained practical experience in:
+
+- Designing a star schema.
+- Building an ETL pipeline.
+- Cleaning and validating raw data.
+- Handling inconsistent date formats.
+- Filtering blank values and `NULL` values.
+- Preventing duplicate records.
+- Writing reusable stored procedures.
+- Building fact and dimension tables.
+- Writing SQL queries to answer real business questions.
+
+The project also improved my problem-solving skills by requiring me to investigate, test and resolve data quality issues throughout the ETL process.
+
+---
+
+# Conclusion
 
 The BrightLearn Sales Data Warehouse project successfully transformed raw transactional data into a structured and reliable reporting solution.
 
-By implementing separate staging, cleaning and data warehouse layers, the project ensured that data quality was improved before analysis. The use of stored procedures automated the ETL process, while the star schema enabled efficient querying and reporting.
+By implementing staging, cleaning and data warehouse layers, the project improved data quality, automated the ETL process and produced reliable data for reporting and analysis.
 
-The business analysis provided valuable insights into product performance, customer spending, store performance, sales trends and inventory management. These findings can support better business decisions and demonstrate how data engineering can turn raw operational data into meaningful business intelligence.
+The final solution provides meaningful insights into product performance, customer behaviour, store performance, sales trends and inventory management. These insights support informed business decisions and demonstrate how data engineering can transform raw operational data into valuable business intelligence.
 
-Overall, this project strengthened my practical skills in SQL Server, ETL development, data cleaning, dimensional modelling and business analytics, while providing a complete end-to-end data engineering solution suitable for a professional portfolio.
-
-
-
+Overall, this project strengthened my practical skills in SQL Server, ETL development, data cleaning, dimensional modelling, stored procedures and analytical SQL while delivering a complete end-to-end data engineering solution suitable for a professional portfolio.
