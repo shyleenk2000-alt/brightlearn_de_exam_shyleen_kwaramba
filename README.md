@@ -1,233 +1,256 @@
-##BrightLearn_Sales_Data_Project
+# BrightLearn Sales Data Warehouse
 
-##Overview
+## **Overview**
 
 This project demonstrates the design and implementation of a Sales Data Warehouse for BrightLearn using SQL Server. The objective was to transform raw sales data into clean, structured, and reliable data that supports business reporting and decision making.
 
-The project follows a complete ETL process consisting of a staging layer, a cleaning layer, and a data warehouse layer. Raw sales data was imported from a CSV file into the staging database, cleaned and standardised using stored procedures, and then loaded into a star schema data warehouse. The final warehouse was used to answer business questions related to sales performance, customer behaviour, inventory management, and store performance.
+The project follows a complete ETL process consisting of a staging layer, a cleaning layer, and a data warehouse layer. Raw sales data was imported from a CSV file into the staging database, cleaned and standardised using stored procedures, and then loaded into a star schema data warehouse.
 
-##Project Objectives
+The completed warehouse was used to answer business questions related to sales performance, customer behaviour, inventory management, and store performance.
 
-The main objectives of this project were to:
+---
 
--Build a complete ETL pipeline using SQL Server.
--Design a star schema data warehouse.
--Clean and standardise raw sales data.
--Automate the ETL process using stored procedures.
--Prevent duplicate records during data loading.
--Improve data quality before loading the data warehouse.
--Generate business insights using SQL queries.
+## **Project Objectives**
 
-##Technologies Used
--SQL Server
--SQL Server Management Studio (SSMS)
--T-SQL
--Git
--GitHub
--Draw.io
+The objectives of this project were to:
 
-##ETL Architecture
+- Build a complete ETL pipeline using SQL Server.
+- Design and implement a star schema.
+- Clean and standardise raw sales data.
+- Automate data loading using stored procedures.
+- Prevent duplicate records during data loading.
+- Improve data quality before loading the warehouse.
+- Generate business insights using SQL queries.
+
+---
+
+## **Technologies Used**
+
+- SQL Server
+- SQL Server Management Studio (SSMS)
+- T-SQL
+- Git
+- GitHub
+- Draw.io
+
+---
+
+## **ETL Architecture**
 
 The project follows a three-layer ETL architecture.
 
-##Staging Layer
+### **Staging Layer**
 
-The staging database stores the raw CSV file exactly as received. No transformations are performed in this layer. It serves as the landing area for incoming data.
+- Loaded the raw CSV file into the staging database.
+- No transformations were performed.
+- Preserved the original source data.
 
-##Cleaning Layer
+### **Cleaning Layer**
 
-The cleaning layer improves the quality of the data before it is loaded into the data warehouse.
+The cleaning layer improved the quality of the data before loading it into the warehouse.
 
-##The cleaning process includes:
+Cleaning techniques included:
 
--Removing duplicate records using SELECT DISTINCT.
--Preventing duplicate inserts using WHERE NOT EXISTS.
--Removing leading and trailing spaces using LTRIM() and RTRIM().
--Converting text values to lowercase using LOWER().
--Filtering out blank values using <> ''.
--Filtering out NULL values using IS NOT NULL.
--Converting inconsistent date formats into the SQL DATE data type using TRY_CONVERT() together with COALESCE().
--Standardising customer, product, supplier, cashier, payment method and store information.
--Loading cleaned data using stored procedures.
+- Removing duplicate records using `SELECT DISTINCT`.
+- Preventing duplicate inserts using `WHERE NOT EXISTS`.
+- Removing leading and trailing spaces using `LTRIM()` and `RTRIM()`.
+- Standardising text using `LOWER()`.
+- Removing blank values using `<> ''`.
+- Removing `NULL` values using `IS NOT NULL`.
+- Converting inconsistent date formats using `TRY_CONVERT()` together with `COALESCE()`.
+- Standardising customer, supplier, product, store, cashier and payment method information.
+- Loading cleaned data using stored procedures.
 
-##Data Warehouse Layer
+### **Data Warehouse Layer**
 
-The cleaned data is loaded into a star schema consisting of dimension tables and a fact table.
+The cleaned data was loaded into a star schema consisting of:
 
-##The dimension tables are:
+**Dimension Tables**
 
--DimCustomer
--DimProduct
--DimStore
--DimDate
--DimPaymentMethod
--DimCashier
--DimSupplier
+- DimCustomer
+- DimProduct
+- DimStore
+- DimDate
+- DimPaymentMethod
+- DimCashier
+- DimSupplier
 
-##The fact table is:
+**Fact Table**
 
--FactSales
+- FactSales
 
-The FactSales table stores the measurable business data while the dimension tables provide descriptive business information used for reporting and analysis.
+The FactSales table stores business measures while the dimension tables provide descriptive information used for reporting and analysis.
 
-##Database Design
+---
+
+## **Database Design**
 
 The data warehouse was designed using a star schema.
 
-The fact table stores transactional measures including:
+The FactSales table stores measures including:
 
--Transaction Discount
--Line Amount
--Unit Price
--Cost Price
--Quantity
--Stock on Hand
--Reorder Threshold
+- Transaction Discount
+- Line Amount
+- Unit Price
+- Cost Price
+- Quantity (Qty)
+- Stock on Hand
+- Reorder Threshold
 
-The dimension tables store descriptive information about customers, products, stores, suppliers, cashiers, payment methods and dates.
+The dimension tables store descriptive information about:
 
-This design improves query performance, simplifies reporting, and supports analytical queries.
+- Customers
+- Products
+- Stores
+- Dates
+- Suppliers
+- Cashiers
+- Payment Methods
 
-##Data Cleaning Process
+This design improves reporting performance and simplifies analytical queries.
 
-Data quality was improved before loading the warehouse by applying several cleaning techniques.
+---
 
--Removed duplicate records using SELECT DISTINCT.
--Prevented duplicate inserts using WHERE NOT EXISTS.
--Removed unnecessary spaces using LTRIM() and RTRIM().
--Converted text values to lowercase using LOWER().
--Removed blank values using <> ''.
--Removed records containing NULL values using IS NOT NULL.
--Converted multiple date formats into a single SQL DATE format using TRY_CONVERT() and COALESCE().
--Standardised customer, product, supplier, store, cashier and payment method information.
--Automated the cleaning process using stored procedures.
+## **Data Cleaning Process**
 
-##Challenges Encountered
+Several data quality checks and cleaning techniques were applied before loading the warehouse.
 
-During the development of this project several challenges were encountered while building the ETL pipeline.
+- Removed duplicate records using `SELECT DISTINCT`.
+- Prevented duplicate inserts using `WHERE NOT EXISTS`.
+- Removed unnecessary spaces using `LTRIM()` and `RTRIM()`.
+- Converted text values to lowercase using `LOWER()`.
+- Removed blank values using `<> ''`.
+- Removed records containing `NULL` values using `IS NOT NULL`.
+- Converted multiple date formats into a single SQL `DATE` format using `TRY_CONVERT()` and `COALESCE()`.
+- Standardised customer, supplier, store, product, cashier and payment information.
+- Automated the ETL process using stored procedures.
 
-##Inconsistent Date Formats
+---
 
-The raw dataset contained multiple date formats including:
+## **Challenges Encountered**
 
--yyyy-mm-dd
--yyyy/mm/dd
--dd-mm-yyyy
--dd/mm/yyyy
--dd Mon yyyy
+During the development of this project, several challenges were encountered.
 
-These inconsistent formats caused errors when converting dates into the SQL DATE data type.
+### **Inconsistent Date Formats**
 
-##Solution
+The raw dataset contained multiple date formats, which caused conversion errors.
 
-I used TRY_CONVERT() together with COALESCE() to test multiple date formats until a valid date was found. This ensured that all dates were standardised before being loaded into the cleaning layer.
+**Solution**
 
-##Duplicate Records
+- Used `TRY_CONVERT()` with different date styles.
+- Used `COALESCE()` to return the first successful conversion.
+- Standardised all dates to the SQL `DATE` data type.
 
-Running stored procedures multiple times initially resulted in duplicate records being inserted into the cleaning layer and dimension tables.
+### **Duplicate Records**
 
-##Solution
+Running stored procedures multiple times initially inserted duplicate records.
 
-I used SELECT DISTINCT to remove duplicate source records and WHERE NOT EXISTS to ensure only new records were inserted each time a stored procedure was executed.
+**Solution**
 
-##Blank Values
+- Used `SELECT DISTINCT` to remove duplicate source records.
+- Used `WHERE NOT EXISTS` to prevent duplicate inserts.
 
-Some records contained empty values even though they were not NULL.
+### **Blank Values**
 
-##Solution
+Some fields contained blank values instead of `NULL`.
 
-I filtered these records using:
+**Solution**
 
-<> ''
+- Filtered blank values using `<> ''`.
 
-This prevented blank customer names, emails, SKUs and other important business fields from being loaded into the cleaning layer.
+### **NULL Values**
 
-##NULL Values
+Some important business fields contained `NULL` values.
 
-Several important business fields contained NULL values.
+**Solution**
 
-##Solution
+- Removed incomplete records using `IS NOT NULL`.
 
-I excluded invalid records using:
+### **Inconsistent Text Formatting**
 
-IS NOT NULL
+Names, cities, suppliers and products contained inconsistent spacing and letter casing.
 
-This ensured that only complete and meaningful records were loaded into the warehouse.
+**Solution**
 
-##Inconsistent Text Formatting
+- Removed extra spaces using `LTRIM()` and `RTRIM()`.
+- Standardised text using `LOWER()`.
 
-The raw dataset contained inconsistent capitalisation together with unnecessary leading and trailing spaces.
+### **Fact Table Design**
 
-##Solution
+Initially there was no transactional table in the cleaning layer to use when loading the fact table.
 
-I standardised all text by removing spaces with LTRIM() and RTRIM() and converting text values to lowercase using LOWER().
+**Solution**
 
-##Building the Fact Table
+- Created a `cleaned_sales` table.
+- Loaded the FactSales table by joining `cleaned_sales` with all dimension tables to retrieve surrogate keys.
 
-Initially, it was unclear how the FactSales table should be populated because no fact table existed in the cleaning layer.
+---
 
-##Solution
+## **Business Questions Answered**
 
-I created a cleaned_sales table that stores cleaned transactional data. The FactSales table was then populated by joining the cleaned sales data with the dimension tables to retrieve surrogate keys before loading the warehouse.
+The project answers the following business questions:
 
-##Business Questions Answered
+1. What are the top five best-selling products by revenue?
+2. How much revenue does each store generate every month?
+3. What is the month-over-month revenue growth?
+4. Who are the top ten customers based on total spending?
+5. Which loyalty customers have not made a purchase since 28 April 2024?
+6. What is the average transaction value for each loyalty tier?
+7. How many products were sold by category in each store?
+8. Which products have stock levels below their reorder threshold?
 
-The data warehouse answers the following business questions:
+---
 
--What are the top five best-selling products by revenue?
--How much revenue does each store generate every month?
--What is the month-over-month revenue growth?
--Who are the top ten customers based on total spending?
--Which loyalty customers have not made a purchase since 28 April 2024?
--What is the average transaction value for each loyalty tier?
--How many products were sold by category in each store?
--Which products have stock levels below their reorder threshold?
-
-##Key Findings
+## **Key Findings**
 
 The analysis produced several valuable business insights.
 
--A small number of products generated a significant share of total revenue, making them the company's strongest performing products.
--Gold loyalty customers recorded the highest average transaction value, showing the importance of maintaining and expanding the loyalty programme.
--Sales performance varied across stores, allowing management to identify high-performing branches and stores that may require additional support.
--Monthly revenue fluctuated during the reporting period, providing valuable insights into sales trends and seasonal demand.
-Customer purchasing behaviour highlighted opportunities to re-engage inactive loyalty customers through targeted marketing campaigns.
--Inventory analysis showed that stock levels were generally well maintained, with no products falling below their reorder thresholds during the reporting period.
+- A small number of products generated most of the company's revenue.
+- Gold loyalty customers had the highest average transaction value.
+- Sales performance varied across stores.
+- Monthly revenue fluctuated throughout the reporting period.
+- Several inactive loyalty customers were identified for potential retention campaigns.
+- Inventory levels were generally well maintained, with no products falling below their reorder threshold.
 
-##Skills Demonstrated
+---
+
+## **Skills Demonstrated**
 
 This project demonstrates practical experience in:
 
--ETL pipeline development
--Data cleaning and validation
--SQL Server database development
--T-SQL programming
--Stored procedure development
--Star schema design
--Fact and dimension modelling
--Data warehouse implementation
--Duplicate prevention techniques
--Date standardisation
--SQL joins
--Aggregate functions
--Window functions
--Business intelligence reporting
--Analytical SQL queries
+- ETL pipeline development
+- SQL Server database development
+- Data warehouse design
+- Star schema modelling
+- Data cleaning and validation
+- Stored procedure development
+- SQL joins
+- Aggregate functions
+- Window functions
+- Date standardisation
+- Duplicate prevention
+- Business intelligence reporting
+- Analytical SQL queries
+- Git and GitHub version control
 
-##Future Improvements
+---
+
+## **Future Improvements**
 
 Future enhancements for this project include:
 
--Building the ETL pipeline using SSIS.
--Creating interactive Power BI dashboards connected to the data warehouse.
--Scheduling automatic ETL jobs using SQL Server Agent.
--Implementing Slowly Changing Dimensions (SCD) to preserve historical data.
--Expanding the warehouse with additional dimensions and business metrics.
+- Building the ETL pipeline using SSIS.
+- Creating interactive Power BI dashboards.
+- Scheduling automated ETL jobs using SQL Server Agent.
+- Implementing Slowly Changing Dimensions (SCD).
+- Expanding the warehouse with additional dimensions and business metrics.
 
-##Conclusion
+---
 
-This project demonstrates the complete process of transforming raw transactional data into a structured data warehouse that supports business reporting and analysis.
+## **Conclusion**
 
-By implementing a staging layer, a cleaning layer, and a star schema data warehouse, the project improved data quality, automated the ETL process using stored procedures, and produced reliable data for reporting.
+This project demonstrates the complete process of transforming raw transactional data into a structured data warehouse.
 
-The project strengthened my practical understanding of data engineering concepts including ETL development, SQL Server, data cleaning, stored procedures, star schema design, and analytical SQL. It also demonstrated how well-designed data warehouses can help organisations make informed, data-driven business decisions
+By implementing staging, cleaning and data warehouse layers, data quality was improved before analysis. Stored procedures automated the ETL process, while the star schema enabled efficient reporting and business analysis.
+
+The project strengthened my practical understanding of SQL Server, ETL development, data cleaning, stored procedures, dimensional modelling and business analytics. It also demonstrates how data engineering can transform raw business data into meaningful insights that support informed decision making.
