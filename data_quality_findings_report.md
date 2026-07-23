@@ -1,4 +1,4 @@
-# 📊 BrightLearn Sales 
+# BrightLearn Sales 
 
 # Data Quality Findings Report
 
